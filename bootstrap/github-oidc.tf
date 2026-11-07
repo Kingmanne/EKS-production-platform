@@ -1,5 +1,6 @@
 locals {
-  github_repo = "Kingmanne/EKS-production-platform"
+  # GitHub OIDC subject uses immutable IDs: owner@<owner_id>/repo@<repo_id>
+  github_sub_prefix = "repo:Kingmanne@173724415/EKS-production-platform@1448910578"
 }
 
 # ---------------------------------------------------------------------------
@@ -31,7 +32,7 @@ data "aws_iam_policy_document" "github_plan_trust" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${local.github_repo}:pull_request"]
+      values   = ["${local.github_sub_prefix}:pull_request"]
     }
   }
 }
@@ -87,7 +88,7 @@ data "aws_iam_policy_document" "github_apply_trust" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${local.github_repo}:environment:production"]
+      values   = ["${local.github_sub_prefix}:environment:production"]
     }
   }
 }
