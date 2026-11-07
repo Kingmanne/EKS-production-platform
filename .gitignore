@@ -15,3 +15,5 @@ secrets*.tfvars
 .DS_Store
 .vscode/
 .idea/
+tfplan
+.envrc
