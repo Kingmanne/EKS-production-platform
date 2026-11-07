@@ -60,7 +60,7 @@ jobs:
           checkov -d . --framework terraform --compact --quiet
 
       - name: Configure AWS credentials (read-only plan role)
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.AWS_PLAN_ROLE_ARN }}
           role-session-name: gha-plan-${{ github.run_id }}
