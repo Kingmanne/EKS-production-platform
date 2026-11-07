@@ -59,17 +59,6 @@ jobs:
           pipx install checkov==3.4.3
           checkov -d . --framework terraform --compact --quiet
 
-      - name: Debug OIDC claims (temporary)
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const token = await core.getIDToken("sts.amazonaws.com");
-            const claims = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString());
-            core.info(`sub        = ${claims.sub}`);
-            core.info(`aud        = ${claims.aud}`);
-            core.info(`repository = ${claims.repository}`);
-            core.info(`event_name = ${claims.event_name}`);
-
       - name: Configure AWS credentials (read-only plan role)
         uses: aws-actions/configure-aws-credentials@v4
         with:
