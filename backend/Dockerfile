@@ -8,7 +8,11 @@ RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 FROM python:3.13-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
-RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin appuser
+# pip is only needed to install packages (done in stage 1). Removing it from the
+# runtime image removes its vendored libraries (msgpack, urllib3) and their CVEs.
+RUN python -m pip uninstall -y pip \
+ && rm -rf /usr/local/lib/python3.13/ensurepip \
+ && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin appuser
 WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY main.py .

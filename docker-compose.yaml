@@ -1,0 +1,43 @@
+services:
+  traefik:
+    image: traefik:v3
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --api.dashboard=true
+      - --api.insecure=true          # dashboard on :8080 inside the container - local only, never in prod
+    ports:
+      - "8080:80"                    # the app
+      - "8090:8080"                  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  frontend:
+    build: ./app
+    image: frontend:dev
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.frontend.rule=PathPrefix(`/`)
+      - traefik.http.routers.frontend.entrypoints=web
+      - traefik.http.services.frontend.loadbalancer.server.port=8080
+
+  backend:
+    build: ./backend
+    image: backend:dev
+    environment:
+      APP_VERSION: compose
+      APP_MESSAGE: Hello from the backend, routed by Traefik
+    deploy:
+      replicas: 2
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.backend.rule=PathPrefix(`/api`)
+      - traefik.http.routers.backend.entrypoints=web
+      - traefik.http.services.backend.loadbalancer.server.port=8000
