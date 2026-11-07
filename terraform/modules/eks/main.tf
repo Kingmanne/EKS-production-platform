@@ -28,6 +28,17 @@ resource "aws_kms_key" "eks" {
   description             = "${var.cluster_name} Kubernetes secrets encryption"
   enable_key_rotation     = true
   deletion_window_in_days = 7
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid       = "EnableIAMPoliciesForAccount"
+      Effect    = "Allow"
+      Principal = { AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root" }
+      Action    = "kms:*"
+      Resource  = "*"
+    }]
+  })
 }
 
 resource "aws_kms_alias" "eks" {
@@ -199,3 +210,5 @@ resource "aws_eks_addon" "this" {
 
   depends_on = [aws_eks_node_group.default]
 }
+
+data "aws_caller_identity" "current" {}

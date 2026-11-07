@@ -1,0 +1,19 @@
+version: 2
+updates:
+  # Keep GitHub Actions versions current (fixes the Node.js 20 deprecation)
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "ci"
+
+  # Keep Terraform providers current (raises PRs that update the lock file)
+  - package-ecosystem: terraform
+    directories:
+      - /terraform
+      - /bootstrap
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "chore(terraform)"

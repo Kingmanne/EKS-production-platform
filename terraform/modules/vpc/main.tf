@@ -6,6 +6,7 @@ locals {
 }
 
 resource "aws_vpc" "this" {
+  # checkov:skip=CKV2_AWS_11: Lab VPC destroyed every session; VPC flow logs to S3 planned as Phase 12 hardening.
   cidr_block           = var.cidr
   enable_dns_support   = true
   enable_dns_hostnames = true

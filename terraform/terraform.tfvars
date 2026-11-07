@@ -6,9 +6,12 @@ azs          = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 private_subnets = ["10.0.0.0/19", "10.0.32.0/19", "10.0.64.0/19"]
 public_subnets  = ["10.0.96.0/24", "10.0.97.0/24", "10.0.98.0/24"]
 
-cluster_version      = "1.37"
-public_access_cidrs  = ["5.151.134.166/32"]
-admin_principal_arns = ["arn:aws:iam::371510064293:user/GoldenMango"]
+cluster_version     = "1.37"
+public_access_cidrs = ["5.151.134.166/32"]
+admin_principal_arns = [
+  "arn:aws:iam::371510064293:user/GoldenMango",
+  "arn:aws:iam::371510064293:role/github-actions-terraform-apply",
+]
 
 # Graviton (ARM) nodes: match the arm64 images built on Apple Silicon, ~20% cheaper than t3
 node_instance_types = ["t4g.medium"]
