@@ -20,9 +20,3 @@ module "eks" {
   node_instance_types  = var.node_instance_types
   node_ami_type        = var.node_ami_type
 }
-
-module "ecr" {
-  source = "./modules/ecr"
-
-  repository_names = var.ecr_repositories
-}
