@@ -45,7 +45,7 @@ jobs:
         run: terraform fmt -recursive -check
 
       - name: Set up TFLint
-        uses: terraform-linters/setup-tflint@v4
+        uses: terraform-linters/setup-tflint@v6
 
       - name: TFLint
         env:
