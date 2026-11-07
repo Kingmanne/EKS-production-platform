@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EKS Production Platform</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 4rem auto; padding: 0 1rem; color: #1f2933; }
+    .card { border: 1px solid #d9e2ec; border-radius: 8px; padding: 1.5rem; }
+    dt { font-weight: 600; margin-top: .75rem; } dd { margin: 0; font-family: ui-monospace, monospace; }
+    button { margin-top: 1rem; padding: .5rem 1rem; border-radius: 6px; border: 1px solid #829ab1; background: #fff; cursor: pointer; }
+    .error { color: #b42318; }
+  </style>
+</head>
+<body>
+  <h1>EKS Production Platform</h1>
+  <div class="card">
+    <dl>
+      <dt>Message</dt><dd id="message">loading…</dd>
+      <dt>Backend version</dt><dd id="version">–</dd>
+      <dt>Served by pod</dt><dd id="hostname">–</dd>
+    </dl>
+    <button onclick="load()">Call the API again</button>
+  </div>
+  <script>
+    async function load() {
+      try {
+        const res = await fetch('/api/message');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        document.getElementById('message').textContent = data.message;
+        document.getElementById('version').textContent = data.version;
+        document.getElementById('hostname').textContent = data.hostname;
+      } catch (err) {
+        const el = document.getElementById('message');
+        el.textContent = 'Could not reach the API (' + err.message + ')';
+        el.className = 'error';
+      }
+    }
+    load();
+  </script>
+</body>
+</html>
