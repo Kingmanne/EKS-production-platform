@@ -8,3 +8,9 @@ variable "keep_last_images" {
   type        = number
   default     = 10
 }
+
+variable "force_delete" {
+  description = "Allow deleting repositories that still contain images"
+  type        = bool
+  default     = false
+}

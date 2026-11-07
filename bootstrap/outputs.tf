@@ -22,3 +22,13 @@ output "github_apply_role_arn" {
   description = "Role GitHub Actions assumes for terraform apply in the production environment"
   value       = aws_iam_role.github_apply.arn
 }
+
+output "ecr_repository_urls" {
+  description = "ECR repository URLs"
+  value       = module.ecr.repository_urls
+}
+
+output "github_ecr_push_role_arn" {
+  description = "Role GitHub Actions assumes to push images from main"
+  value       = aws_iam_role.github_ecr_push.arn
+}

@@ -53,8 +53,3 @@ variable "node_ami_type" {
   description = "AMI type for worker nodes"
   type        = string
 }
-
-variable "ecr_repositories" {
-  description = "ECR repositories to create"
-  type        = list(string)
-}

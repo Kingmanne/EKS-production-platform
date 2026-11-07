@@ -26,10 +26,6 @@ output "oidc_provider_arn" {
   value = module.eks.oidc_provider_arn
 }
 
-output "ecr_repository_urls" {
-  value = module.ecr.repository_urls
-}
-
 output "configure_kubectl" {
   value = "aws eks update-kubeconfig --region ${var.region} --name ${module.eks.cluster_name}"
 }
