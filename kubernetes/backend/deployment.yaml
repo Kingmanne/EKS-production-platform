@@ -31,7 +31,7 @@ spec:
             - name: APP_VERSION
               value: "02347e75315182cc40aabb79b2ce91c2c094b90b"
             - name: APP_MESSAGE
-              value: "Hello from the backend on Kubernetes"
+              value: "Hello from the backend, deployed by GitOps"
           resources:
             requests:
               cpu: 50m
