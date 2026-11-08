@@ -5,7 +5,7 @@ metadata:
   namespace: app
   annotations:
     # cert-manager sees this and requests a certificate for the hosts under tls:
-    cert-manager.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
   tls:
