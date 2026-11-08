@@ -1,0 +1,20 @@
+# App-of-apps: ArgoCD manages every Application defined in kubernetes/argocd/apps/.
+# Applied once by hand (bootstrap); everything after that comes from Git.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Kingmanne/EKS-production-platform.git
+    targetRevision: main
+    path: kubernetes/argocd/apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
