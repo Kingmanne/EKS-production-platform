@@ -53,3 +53,8 @@ variable "node_ami_type" {
   description = "AMI type for worker nodes"
   type        = string
 }
+
+variable "lab_zone_name" {
+  description = "Route53 zone ExternalDNS is allowed to manage"
+  type        = string
+}
