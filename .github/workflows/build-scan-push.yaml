@@ -1,0 +1,117 @@
+name: build-scan-push
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "backend/**"
+      - ".github/workflows/build-scan-push.yaml"
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "backend/**"
+      - ".github/workflows/build-scan-push.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  TRIVY_VERSION: "0.76.2"
+
+jobs:
+  build:
+    name: Build and scan (${{ matrix.service }})
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: backend
+            context: backend
+          - service: frontend
+            context: app
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Build image (native arm64)
+        run: |
+          docker build --provenance=false --pull \
+            -t "${{ matrix.service }}:${{ github.sha }}" "${{ matrix.context }}"
+          docker image inspect "${{ matrix.service }}:${{ github.sha }}" \
+            --format 'Built {{.Architecture}} image, {{.Size}} bytes'
+
+      - name: Scan with Trivy (fail on fixable HIGH/CRITICAL)
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            "aquasec/trivy:${TRIVY_VERSION}" image \
+            --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --no-progress \
+            "${{ matrix.service }}:${{ github.sha }}"
+
+      - name: Configure AWS credentials (ECR push role)
+        if: github.event_name != 'pull_request'
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_ECR_PUSH_ROLE_ARN }}
+          role-session-name: gha-build-${{ github.run_id }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Push to ECR
+        if: github.event_name != 'pull_request'
+        run: |
+          ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+          REGISTRY="${ACCOUNT}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com"
+          IMAGE="${REGISTRY}/${{ matrix.service }}:${{ github.sha }}"
+          aws ecr get-login-password | docker login --username AWS --password-stdin "$REGISTRY"
+          docker tag "${{ matrix.service }}:${{ github.sha }}" "$IMAGE"
+          docker push "$IMAGE"
+          echo "Pushed \`$IMAGE\`" >> "$GITHUB_STEP_SUMMARY"
+
+  update-manifests:
+    name: Update image tags in Git
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: image-release
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout main with the deploy key
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Set new image tags and version
+        env:
+          TAG: ${{ github.sha }}
+        run: |
+          for f in kubernetes/backend/deployment.yaml kubernetes/app/deployment.yaml; do
+            yq -i '.spec.template.spec.containers[0].image |= sub(":[^:]+$"; ":" + strenv(TAG))' "$f"
+          done
+          yq -i '(.spec.template.spec.containers[0].env[] | select(.name == "APP_VERSION") | .value) = strenv(TAG)' \
+            kubernetes/backend/deployment.yaml
+          git diff
+
+      - name: Commit and push to main
+        env:
+          TAG: ${{ github.sha }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add kubernetes/
+          if git diff --cached --quiet; then echo "No changes to commit"; exit 0; fi
+          git commit -m "deploy: images ${TAG::7} [skip ci]"
+          git push origin HEAD:main
