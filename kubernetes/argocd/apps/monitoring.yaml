@@ -13,6 +13,14 @@ spec:
     targetRevision: 93.1.0
     helm:
       valuesObject:
+        # Pinned: operator/config-reloader v0.95.1 were published amd64-only (no arm64)
+        # and our nodes are Graviton. Remove once upstream ships a multi-arch v0.95.x.
+        prometheusOperator:
+          image:
+            tag: v0.94.2
+          prometheusConfigReloader:
+            image:
+              tag: v0.94.2
         # EKS runs these on the AWS-managed control plane: nothing to scrape.
         kubeControllerManager: { enabled: false }
         kubeScheduler: { enabled: false }
