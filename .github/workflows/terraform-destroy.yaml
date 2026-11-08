@@ -1,0 +1,153 @@
+name: terraform-destroy
+
+# Manual, guarded teardown of the platform stack (terraform/).
+# bootstrap/ (state bucket, DNS zone, OIDC roles, ECR) is never touched.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type exactly: destroy eks-platform'
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: terraform-state      # never overlaps with terraform-apply
+  cancel-in-progress: false
+
+env:
+  TERRAFORM_VERSION: 1.17.1
+  AWS_REGION: eu-west-2
+  CLUSTER: eks-platform
+  LAB_ZONE: lab.mustaphaseriki.dev
+
+jobs:
+  guard:
+    name: Check confirmation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require exact phrase on main
+        run: |
+          if [ "${{ inputs.confirm }}" != "destroy eks-platform" ]; then
+            echo "::error::Confirmation phrase did not match. Nothing was destroyed."; exit 1
+          fi
+          if [ "${{ github.ref }}" != "refs/heads/main" ]; then
+            echo "::error::Destroy may only run from main."; exit 1
+          fi
+
+  destroy:
+    name: Tear down platform
+    needs: guard
+    runs-on: ubuntu-latest
+    environment: production   # required reviewer approval
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_APPLY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Does the cluster exist?
+        id: cluster
+        run: |
+          if aws eks describe-cluster --name "$CLUSTER" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Cluster not found: skipping Kubernetes cleanup."
+          fi
+
+      - name: Allow this runner to reach the EKS API (just-in-time)
+        if: steps.cluster.outputs.exists == 'true'
+        run: |
+          RUNNER_IP="$(curl -fsS https://checkip.amazonaws.com)/32"
+          CURRENT=$(aws eks describe-cluster --name "$CLUSTER" \
+            --query 'cluster.resourcesVpcConfig.publicAccessCidrs' --output text | tr '\t' ',')
+          echo "Runner: $RUNNER_IP | current allow-list: $CURRENT"
+          case ",$CURRENT," in *",$RUNNER_IP,"*) echo "Already allowed"; exit 0;; esac
+          UPDATE_ID=$(aws eks update-cluster-config --name "$CLUSTER" \
+            --resources-vpc-config publicAccessCidrs="$CURRENT,$RUNNER_IP" \
+            --query 'update.id' --output text)
+          for i in $(seq 1 60); do
+            STATUS=$(aws eks describe-update --name "$CLUSTER" --update-id "$UPDATE_ID" \
+              --query 'update.status' --output text)
+            echo "Endpoint update: $STATUS"
+            case "$STATUS" in
+              Successful) exit 0 ;;
+              Failed|Cancelled) echo "::error::Endpoint update $STATUS"; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "::error::Endpoint update timed out"; exit 1
+
+      - name: Configure kubectl
+        if: steps.cluster.outputs.exists == 'true'
+        run: |
+          aws eks update-kubeconfig --name "$CLUSTER" --region "$AWS_REGION"
+          kubectl get nodes
+
+      - name: Delete Argo CD applications (root first, then children)
+        if: steps.cluster.outputs.exists == 'true'
+        run: |
+          if kubectl get crd applications.argoproj.io >/dev/null 2>&1; then
+            # root has no finalizer: removing it stops it re-creating the child apps
+            kubectl delete application root -n argocd --ignore-not-found --wait=true --timeout=2m
+            # children have the resources finalizer: their Ingress, Deployments etc. go with them
+            kubectl delete applications --all -n argocd --wait=true --timeout=15m
+          fi
+          kubectl get ingress -A
+
+      - name: Wait for ExternalDNS to clean the DNS zone
+        if: steps.cluster.outputs.exists == 'true'
+        run: |
+          ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name "$LAB_ZONE" \
+            --query 'HostedZones[0].Id' --output text)
+          for i in $(seq 1 30); do
+            LEFT=$(aws route53 list-resource-record-sets --hosted-zone-id "$ZONE_ID" \
+              --query "ResourceRecordSets[?Type!='NS' && Type!='SOA'].Name" --output text)
+            if [ -z "$LEFT" ] || [ "$LEFT" = "None" ]; then echo "DNS zone is clean"; exit 0; fi
+            echo "Waiting for records to be removed: $LEFT"; sleep 10
+          done
+          echo "::error::DNS records still present after 5 minutes: $LEFT"; exit 1
+
+      - name: Remove Traefik (its LoadBalancer Service owns the NLB)
+        if: steps.cluster.outputs.exists == 'true'
+        run: helm uninstall traefik -n traefik --wait --timeout 5m || echo "Traefik not installed"
+
+      - name: Verify no load balancers remain for this cluster
+        run: |
+          for i in $(seq 1 30); do
+            LEFT=""
+            for arn in $(aws elbv2 describe-load-balancers --query 'LoadBalancers[].LoadBalancerArn' --output text); do
+              if aws elbv2 describe-tags --resource-arns "$arn" \
+                   --query "TagDescriptions[0].Tags[?Key=='kubernetes.io/cluster/${CLUSTER}'].Value" \
+                   --output text | grep -q .; then
+                LEFT="$LEFT $arn"
+              fi
+            done
+            if [ -z "$LEFT" ]; then echo "No cluster load balancers left"; exit 0; fi
+            echo "Waiting for:$LEFT"; sleep 10
+          done
+          echo "::error::Load balancers still present:$LEFT"; exit 1
+
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform destroy (saved plan)
+        working-directory: terraform
+        run: |
+          terraform init -input=false
+          terraform plan -destroy -input=false -lock-timeout=120s -out=tfplan
+          terraform apply -input=false -lock-timeout=120s tfplan
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### Teardown of \`$CLUSTER\`: ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "bootstrap/ (state, DNS zone, OIDC, ECR) left intact." >> "$GITHUB_STEP_SUMMARY"
