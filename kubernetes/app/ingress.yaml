@@ -3,10 +3,18 @@ kind: Ingress
 metadata:
   name: app
   namespace: app
+  annotations:
+    # cert-manager sees this and requests a certificate for the hosts under tls:
+    cert-manager.io/cluster-issuer: letsencrypt-staging
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - app.lab.mustaphaseriki.dev
+      secretName: app-tls
   rules:
-    - http:
+    - host: app.lab.mustaphaseriki.dev
+      http:
         paths:
           - path: /api
             pathType: Prefix

@@ -1,0 +1,3 @@
+# Install cert-manager's CRDs (Certificate, ClusterIssuer, ...) with the chart
+crds:
+  enabled: true

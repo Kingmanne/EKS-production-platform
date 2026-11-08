@@ -1,0 +1,22 @@
+provider:
+  name: aws
+
+env:
+  - name: AWS_DEFAULT_REGION
+    value: eu-west-2
+
+# IRSA: this annotation makes EKS inject web-identity credentials for the role
+serviceAccount:
+  name: external-dns
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::371510064293:role/eks-platform-external-dns
+
+sources:
+  - ingress
+
+domainFilters:
+  - lab.mustaphaseriki.dev
+
+policy: sync          # create AND delete records to match Ingresses
+registry: txt
+txtOwnerId: eks-platform
