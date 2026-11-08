@@ -1,41 +1,17 @@
-# Platform add-ons, pinned. Install/upgrade with:  helmfile -f kubernetes/helmfile.yaml apply
+# Bootstrap only: installs Argo CD. Everything else is an Argo CD Application
+# in kubernetes/argocd/apps/ (app-of-apps via kubernetes/argocd/root.yaml).
+#   helmfile -f kubernetes/helmfile.yaml apply
+#   kubectl apply -f kubernetes/argocd/root.yaml
 repositories:
-  - name: traefik
-    url: https://traefik.github.io/charts
-  - name: jetstack
-    url: https://charts.jetstack.io
-  - name: external-dns
-    url: https://kubernetes-sigs.github.io/external-dns/
   - name: argo
     url: https://argoproj.github.io/argo-helm
 
 helmDefaults:
-  wait: true          # don't report success until pods are Ready
+  wait: true
   timeout: 600
   createNamespace: true
 
 releases:
-  - name: cert-manager
-    namespace: cert-manager
-    chart: jetstack/cert-manager
-    version: v1.21.3
-    values:
-      - helm-values/cert-manager.yaml
-
-  - name: traefik
-    namespace: traefik
-    chart: traefik/traefik
-    version: 42.3.1
-    values:
-      - helm-values/traefik.yaml
-
-  - name: external-dns
-    namespace: external-dns
-    chart: external-dns/external-dns
-    version: 1.23.0
-    values:
-      - helm-values/external-dns.yaml
-
   - name: argocd
     namespace: argocd
     chart: argo/argo-cd
