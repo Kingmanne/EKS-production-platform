@@ -1,0 +1,212 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1860" height="1420" viewBox="0 0 1860 1420" font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif">
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker></defs>
+<rect x="0" y="0" width="1860" height="1420" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<text x="20" y="42" font-size="24" font-weight="800" fill="#0f172a" text-anchor="start">EKS Production Platform: how the resources connect</text>
+<text x="20" y="66" font-size="14" font-weight="400" fill="#475569" text-anchor="start">One AWS account (eu-west-2), two Terraform stacks, GitHub for CI, Argo CD for delivery.</text>
+<rect x="20" y="90" width="300" height="60" rx="10" fill="#fff" stroke="#9aa4b2" stroke-width="1.5"/>
+<text x="32" y="112" font-size="14" font-weight="700" fill="#111827" text-anchor="start">User / browser</text>
+<text x="32" y="132" font-size="13" font-weight="400" fill="#374151" text-anchor="start">https://app.lab.mustaphaseriki.dev</text>
+<rect x="20" y="175" width="300" height="80" rx="10" fill="#fff7ed" stroke="#f38020" stroke-width="1.5"/>
+<text x="32" y="197" font-size="14" font-weight="700" fill="#111827" text-anchor="start">Cloudflare DNS</text>
+<text x="32" y="217" font-size="13" font-weight="400" fill="#374151" text-anchor="start">mustaphaseriki.dev (parent domain)</text>
+<text x="32" y="235" font-size="13" font-weight="400" fill="#374151" text-anchor="start">NS records delegate lab. to Route53</text>
+<rect x="20" y="285" width="300" height="75" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+<text x="32" y="307" font-size="14" font-weight="700" fill="#111827" text-anchor="start">Let's Encrypt (ACME)</text>
+<text x="32" y="327" font-size="13" font-weight="400" fill="#374151" text-anchor="start">staging + production issuers</text>
+<text x="32" y="345" font-size="13" font-weight="400" fill="#374151" text-anchor="start">HTTP-01 challenge via Traefik</text>
+<rect x="20" y="390" width="300" height="620" rx="10" fill="#f6f8fa" stroke="#24292f" stroke-width="2"/>
+<text x="32" y="414" font-size="16" font-weight="800" fill="#111827" text-anchor="start">GitHub</text>
+<text x="32" y="433" font-size="12" font-weight="600" fill="#374151" text-anchor="start">Kingmanne/EKS-production-platform</text>
+<rect x="32" y="448" width="276" height="82" rx="10" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="44" y="470" font-size="14" font-weight="700" fill="#111827" text-anchor="start">Repo: main branch</text>
+<text x="44" y="490" font-size="12" font-weight="400" fill="#374151" text-anchor="start">ruleset: PR + required check,</text>
+<text x="44" y="508" font-size="12" font-weight="400" fill="#374151" text-anchor="start">no force push; squash merge</text>
+<rect x="32" y="540" width="276" height="82" rx="10" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="44" y="562" font-size="14" font-weight="700" fill="#111827" text-anchor="start">terraform-plan (every PR)</text>
+<text x="44" y="582" font-size="12" font-weight="400" fill="#374151" text-anchor="start">fmt · TFLint · Checkov · plan</text>
+<text x="44" y="600" font-size="12" font-weight="400" fill="#374151" text-anchor="start">read-only plan role</text>
+<rect x="32" y="632" width="276" height="82" rx="10" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="44" y="654" font-size="14" font-weight="700" fill="#111827" text-anchor="start">terraform-apply (main)</text>
+<text x="44" y="674" font-size="12" font-weight="400" fill="#374151" text-anchor="start">approval on 'production'</text>
+<text x="44" y="692" font-size="12" font-weight="400" fill="#374151" text-anchor="start">apply role, saved plan</text>
+<rect x="32" y="724" width="276" height="82" rx="10" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="44" y="746" font-size="14" font-weight="700" fill="#111827" text-anchor="start">build-scan-push</text>
+<text x="44" y="766" font-size="12" font-weight="400" fill="#374151" text-anchor="start">arm64 build · Trivy gate</text>
+<text x="44" y="784" font-size="12" font-weight="400" fill="#374151" text-anchor="start">push &lt;sha&gt; tag · ecr-push role</text>
+<rect x="32" y="816" width="276" height="82" rx="10" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="44" y="838" font-size="14" font-weight="700" fill="#111827" text-anchor="start">update-manifests bot</text>
+<text x="44" y="858" font-size="12" font-weight="400" fill="#374151" text-anchor="start">commits new image tag</text>
+<text x="44" y="876" font-size="12" font-weight="400" fill="#374151" text-anchor="start">deploy key (ruleset bypass)</text>
+<rect x="32" y="908" width="276" height="82" rx="10" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="44" y="930" font-size="14" font-weight="700" fill="#111827" text-anchor="start">terraform-destroy</text>
+<text x="44" y="950" font-size="12" font-weight="400" fill="#374151" text-anchor="start">typed phrase + approval</text>
+<text x="44" y="968" font-size="12" font-weight="400" fill="#374151" text-anchor="start">ordered, verified teardown</text>
+<rect x="20" y="1030" width="300" height="110" rx="10" fill="#faf5ff" stroke="#a855f7" stroke-width="1.5"/>
+<text x="32" y="1052" font-size="14" font-weight="700" fill="#111827" text-anchor="start">Upstream Helm chart repos</text>
+<text x="32" y="1072" font-size="12" font-weight="400" fill="#374151" text-anchor="start">traefik · jetstack (cert-manager)</text>
+<text x="32" y="1090" font-size="12" font-weight="400" fill="#374151" text-anchor="start">external-dns · argo · prometheus-</text>
+<text x="32" y="1108" font-size="12" font-weight="400" fill="#374151" text-anchor="start">community (all versions pinned)</text>
+<g transform="translate(60,0)">
+<rect x="350" y="80" width="1430" height="1210" rx="14" fill="#fffdf8" stroke="#ff9900" stroke-width="2.5"/>
+<text x="366" y="104" font-size="16" font-weight="800" fill="#b45309" text-anchor="start">AWS account · eu-west-2</text>
+<rect x="370" y="114" width="1390" height="156" rx="10" fill="#fff7e6" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="1745" y="132" font-size="12" font-weight="700" fill="#b45309" text-anchor="end">bootstrap/ stack: permanent, applied by hand</text>
+<rect x="390" y="140" width="250" height="112" rx="10" fill="#ffffff" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="402" y="162" font-size="14" font-weight="700" fill="#111827" text-anchor="start">S3 state bucket</text>
+<text x="402" y="182" font-size="12" font-weight="400" fill="#374151" text-anchor="start">eks-platform-tfstate</text>
+<text x="402" y="200" font-size="12" font-weight="400" fill="#374151" text-anchor="start">versioned · encrypted</text>
+<text x="402" y="218" font-size="12" font-weight="400" fill="#374151" text-anchor="start">native lockfile</text>
+<rect x="662" y="140" width="250" height="112" rx="10" fill="#ffffff" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="674" y="162" font-size="14" font-weight="700" fill="#111827" text-anchor="start">Route53 hosted zone</text>
+<text x="674" y="182" font-size="12" font-weight="400" fill="#374151" text-anchor="start">lab.mustaphaseriki.dev</text>
+<text x="674" y="200" font-size="12" font-weight="400" fill="#374151" text-anchor="start">A/AAAA/TXT written</text>
+<text x="674" y="218" font-size="12" font-weight="400" fill="#374151" text-anchor="start">by ExternalDNS</text>
+<rect x="934" y="140" width="250" height="112" rx="10" fill="#ffffff" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="946" y="162" font-size="14" font-weight="700" fill="#111827" text-anchor="start">IAM OIDC provider</text>
+<text x="946" y="182" font-size="12" font-weight="400" fill="#374151" text-anchor="start">token.actions.github</text>
+<text x="946" y="200" font-size="12" font-weight="400" fill="#374151" text-anchor="start">usercontent.com</text>
+<text x="946" y="218" font-size="12" font-weight="400" fill="#374151" text-anchor="start">(no AWS keys in GitHub)</text>
+<rect x="1206" y="140" width="250" height="112" rx="10" fill="#ffffff" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="1218" y="162" font-size="14" font-weight="700" fill="#111827" text-anchor="start">IAM roles for GitHub</text>
+<text x="1218" y="182" font-size="12" font-weight="400" fill="#374151" text-anchor="start">plan (PRs, read-only)</text>
+<text x="1218" y="200" font-size="12" font-weight="400" fill="#374151" text-anchor="start">apply (production env)</text>
+<text x="1218" y="218" font-size="12" font-weight="400" fill="#374151" text-anchor="start">ecr-push (main only)</text>
+<rect x="1478" y="140" width="250" height="112" rx="10" fill="#ffffff" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="1490" y="162" font-size="14" font-weight="700" fill="#111827" text-anchor="start">ECR repositories</text>
+<text x="1490" y="182" font-size="12" font-weight="400" fill="#374151" text-anchor="start">frontend · backend</text>
+<text x="1490" y="200" font-size="12" font-weight="400" fill="#374151" text-anchor="start">immutable tags · KMS</text>
+<text x="1490" y="218" font-size="12" font-weight="400" fill="#374151" text-anchor="start">scan on push</text>
+<text x="1745" y="312" font-size="12" font-weight="700" fill="#1d4ed8" text-anchor="end">terraform/ stack: platform, built and destroyed by the pipelines</text>
+<rect x="370" y="320" width="1070" height="930" rx="12" fill="#f4fbf4" stroke="#2e7d32" stroke-width="2"/>
+<text x="386" y="342" font-size="14" font-weight="800" fill="#166534" text-anchor="start">VPC 10.0.0.0/16 · 3 AZs (eu-west-2a/b/c)</text>
+<rect x="390" y="356" width="1030" height="170" rx="10" fill="#e8f5e9" stroke="#43a047" stroke-width="1.2"/>
+<text x="404" y="376" font-size="12" font-weight="700" fill="#166534" text-anchor="start">Public subnets 10.0.96.0/24 · 10.0.97.0/24 · 10.0.98.0/24</text>
+<rect x="405" y="392" width="250" height="120" rx="10" fill="#fff" stroke="#9aa4b2" stroke-width="1.5"/>
+<text x="417" y="414" font-size="14" font-weight="700" fill="#111827" text-anchor="start">Internet gateway</text>
+<text x="417" y="434" font-size="13" font-weight="400" fill="#374151" text-anchor="start">public route for the</text>
+<text x="417" y="452" font-size="13" font-weight="400" fill="#374151" text-anchor="start">NAT gateway and NLB</text>
+<rect x="670" y="392" width="300" height="120" rx="10" fill="#fff" stroke="#9aa4b2" stroke-width="1.5"/>
+<text x="682" y="414" font-size="14" font-weight="700" fill="#111827" text-anchor="start">NAT gateway (AZ a, Elastic IP)</text>
+<text x="682" y="434" font-size="13" font-weight="400" fill="#374151" text-anchor="start">nodes' only way out:</text>
+<text x="682" y="452" font-size="13" font-weight="400" fill="#374151" text-anchor="start">ECR image pulls, Git,</text>
+<text x="682" y="470" font-size="13" font-weight="400" fill="#374151" text-anchor="start">Helm charts, ACME, AWS APIs</text>
+<rect x="985" y="392" width="420" height="120" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="997" y="414" font-size="14" font-weight="700" fill="#111827" text-anchor="start">Network Load Balancer</text>
+<text x="997" y="434" font-size="13" font-weight="400" fill="#374151" text-anchor="start">created by Traefik's LoadBalancer</text>
+<text x="997" y="452" font-size="13" font-weight="400" fill="#374151" text-anchor="start">Service (Kubernetes, not Terraform)</text>
+<text x="997" y="470" font-size="13" font-weight="400" fill="#374151" text-anchor="start">deleted first on teardown</text>
+<rect x="390" y="545" width="1030" height="690" rx="10" fill="#e3f2fd" stroke="#1e88e5" stroke-width="1.2"/>
+<text x="404" y="566" font-size="12" font-weight="700" fill="#1e3a8a" text-anchor="start">Private subnets 10.0.0.0/19 ×3 (pod IPs from the VPC CNI) · managed node group: 2× t4g.medium Graviton, AL2023 arm64</text>
+<rect x="405" y="620" width="320" height="170" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="417" y="642" font-size="14" font-weight="700" fill="#111827" text-anchor="start">ns traefik</text>
+<text x="417" y="662" font-size="13" font-weight="400" fill="#374151" text-anchor="start">Traefik ingress controller</text>
+<text x="417" y="680" font-size="13" font-weight="400" fill="#374151" text-anchor="start">TLS termination, routes</text>
+<text x="417" y="698" font-size="13" font-weight="400" fill="#374151" text-anchor="start">/api → backend, / → frontend</text>
+<rect x="745" y="620" width="320" height="170" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="1.5"/>
+<text x="757" y="642" font-size="14" font-weight="700" fill="#111827" text-anchor="start">ns cert-manager</text>
+<text x="757" y="662" font-size="13" font-weight="400" fill="#374151" text-anchor="start">cert-manager + ClusterIssuers</text>
+<text x="757" y="680" font-size="13" font-weight="400" fill="#374151" text-anchor="start">issues app-tls certificate</text>
+<text x="757" y="698" font-size="13" font-weight="400" fill="#374151" text-anchor="start">renews automatically</text>
+<rect x="1085" y="620" width="320" height="170" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="1.5"/>
+<text x="1097" y="642" font-size="14" font-weight="700" fill="#111827" text-anchor="start">ns external-dns</text>
+<text x="1097" y="662" font-size="13" font-weight="400" fill="#374151" text-anchor="start">ExternalDNS (policy: sync)</text>
+<text x="1097" y="680" font-size="13" font-weight="400" fill="#374151" text-anchor="start">watches Ingress objects</text>
+<text x="1097" y="698" font-size="13" font-weight="400" fill="#374151" text-anchor="start">TXT owner: eks-platform</text>
+<rect x="405" y="810" width="320" height="170" rx="10" fill="#ffffff" stroke="#ea580c" stroke-width="1.5"/>
+<text x="417" y="832" font-size="14" font-weight="700" fill="#111827" text-anchor="start">ns argocd</text>
+<text x="417" y="852" font-size="13" font-weight="400" fill="#374151" text-anchor="start">Argo CD (installed by Helmfile)</text>
+<text x="417" y="870" font-size="13" font-weight="400" fill="#374151" text-anchor="start">root app-of-apps → 7 apps</text>
+<text x="417" y="888" font-size="13" font-weight="400" fill="#374151" text-anchor="start">auto-sync · prune · self-heal</text>
+<rect x="745" y="810" width="320" height="170" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="757" y="832" font-size="14" font-weight="700" fill="#111827" text-anchor="start">ns app</text>
+<text x="757" y="852" font-size="13" font-weight="400" fill="#374151" text-anchor="start">frontend: nginx ×2</text>
+<text x="757" y="870" font-size="13" font-weight="400" fill="#374151" text-anchor="start">backend: FastAPI ×2</text>
+<text x="757" y="888" font-size="13" font-weight="400" fill="#374151" text-anchor="start">Ingress app.lab… (hardened pods)</text>
+<rect x="1085" y="810" width="320" height="170" rx="10" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+<text x="1097" y="832" font-size="14" font-weight="700" fill="#111827" text-anchor="start">ns monitoring</text>
+<text x="1097" y="852" font-size="13" font-weight="400" fill="#374151" text-anchor="start">Prometheus · Alertmanager</text>
+<text x="1097" y="870" font-size="13" font-weight="400" fill="#374151" text-anchor="start">Grafana · kube-state-metrics</text>
+<text x="1097" y="888" font-size="13" font-weight="400" fill="#374151" text-anchor="start">node-exporter (every node)</text>
+<rect x="405" y="1000" width="320" height="120" rx="10" fill="#ffffff" stroke="#9aa4b2" stroke-width="1.5"/>
+<text x="417" y="1022" font-size="14" font-weight="700" fill="#111827" text-anchor="start">ns kube-system</text>
+<text x="417" y="1042" font-size="13" font-weight="400" fill="#374151" text-anchor="start">EKS managed add-ons:</text>
+<text x="417" y="1060" font-size="13" font-weight="400" fill="#374151" text-anchor="start">vpc-cni · kube-proxy · coredns</text>
+<rect x="745" y="1000" width="320" height="120" rx="10" fill="#ffffff" stroke="#9aa4b2" stroke-width="1.5"/>
+<text x="757" y="1022" font-size="14" font-weight="700" fill="#111827" text-anchor="start">EKS control-plane ENIs</text>
+<text x="757" y="1042" font-size="13" font-weight="400" fill="#374151" text-anchor="start">the API server's network</text>
+<text x="757" y="1060" font-size="13" font-weight="400" fill="#374151" text-anchor="start">interfaces in your subnets</text>
+<text x="757" y="1078" font-size="13" font-weight="400" fill="#374151" text-anchor="start">(nodes reach it privately)</text>
+<rect x="1085" y="1000" width="320" height="120" rx="10" fill="#ffffff" stroke="#9aa4b2" stroke-width="1.5"/>
+<text x="1097" y="1022" font-size="14" font-weight="700" fill="#111827" text-anchor="start">Pod security defaults</text>
+<text x="1097" y="1042" font-size="13" font-weight="400" fill="#374151" text-anchor="start">non-root · read-only root FS</text>
+<text x="1097" y="1060" font-size="13" font-weight="400" fill="#374151" text-anchor="start">drop ALL capabilities</text>
+<text x="1097" y="1078" font-size="13" font-weight="400" fill="#374151" text-anchor="start">seccomp RuntimeDefault</text>
+<text x="405" y="1160" font-size="12" font-weight="400" fill="#1e3a8a" text-anchor="start" font-style="italic">Prometheus scrapes every namespace through ServiceMonitors; Grafana and Argo CD are reached only with kubectl port-forward.</text>
+<rect x="1460" y="320" width="300" height="445" rx="12" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/>
+<text x="1474" y="344" font-size="14" font-weight="800" fill="#3730a3" text-anchor="start">EKS control plane (AWS-managed)</text>
+<rect x="1474" y="356" width="272" height="90" rx="10" fill="#ffffff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="1486" y="378" font-size="14" font-weight="700" fill="#111827" text-anchor="start">API endpoint</text>
+<text x="1486" y="398" font-size="12" font-weight="400" fill="#374151" text-anchor="start">public: 1 allowed IP</text>
+<text x="1486" y="416" font-size="12" font-weight="400" fill="#374151" text-anchor="start">+ private (inside VPC)</text>
+<rect x="1474" y="456" width="272" height="90" rx="10" fill="#ffffff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="1486" y="478" font-size="14" font-weight="700" fill="#111827" text-anchor="start">Access entries</text>
+<text x="1486" y="498" font-size="12" font-weight="400" fill="#374151" text-anchor="start">IAM user + apply role</text>
+<text x="1486" y="516" font-size="12" font-weight="400" fill="#374151" text-anchor="start">→ cluster admin</text>
+<rect x="1474" y="556" width="272" height="90" rx="10" fill="#ffffff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="1486" y="578" font-size="14" font-weight="700" fill="#111827" text-anchor="start">KMS key</text>
+<text x="1486" y="598" font-size="12" font-weight="400" fill="#374151" text-anchor="start">envelope encryption</text>
+<text x="1486" y="616" font-size="12" font-weight="400" fill="#374151" text-anchor="start">of Kubernetes Secrets</text>
+<rect x="1474" y="656" width="272" height="90" rx="10" fill="#ffffff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="1486" y="678" font-size="14" font-weight="700" fill="#111827" text-anchor="start">CloudWatch Logs</text>
+<text x="1486" y="698" font-size="12" font-weight="400" fill="#374151" text-anchor="start">all 5 control-plane</text>
+<text x="1486" y="716" font-size="12" font-weight="400" fill="#374151" text-anchor="start">log types, 3-day retention</text>
+<rect x="1460" y="785" width="300" height="465" rx="12" fill="#faf5ff" stroke="#7c3aed" stroke-width="2"/>
+<text x="1474" y="809" font-size="14" font-weight="800" fill="#6d28d9" text-anchor="start">IAM for the cluster</text>
+<rect x="1474" y="822" width="272" height="92" rx="10" fill="#ffffff" stroke="#c4b5fd" stroke-width="1.5"/>
+<text x="1486" y="844" font-size="14" font-weight="700" fill="#111827" text-anchor="start">IAM OIDC provider (IRSA)</text>
+<text x="1486" y="864" font-size="12" font-weight="400" fill="#374151" text-anchor="start">lets pods assume IAM roles</text>
+<text x="1486" y="882" font-size="12" font-weight="400" fill="#374151" text-anchor="start">via service-account tokens</text>
+<rect x="1474" y="926" width="272" height="92" rx="10" fill="#ffffff" stroke="#c4b5fd" stroke-width="1.5"/>
+<text x="1486" y="948" font-size="14" font-weight="700" fill="#111827" text-anchor="start">IRSA role: external-dns</text>
+<text x="1486" y="968" font-size="12" font-weight="400" fill="#374151" text-anchor="start">Route53 changes on the</text>
+<text x="1486" y="986" font-size="12" font-weight="400" fill="#374151" text-anchor="start">lab zone only</text>
+<rect x="1474" y="1030" width="272" height="92" rx="10" fill="#ffffff" stroke="#c4b5fd" stroke-width="1.5"/>
+<text x="1486" y="1052" font-size="14" font-weight="700" fill="#111827" text-anchor="start">Node role</text>
+<text x="1486" y="1072" font-size="12" font-weight="400" fill="#374151" text-anchor="start">worker · CNI · ECR read-only</text>
+<rect x="1474" y="1134" width="272" height="92" rx="10" fill="#ffffff" stroke="#c4b5fd" stroke-width="1.5"/>
+<text x="1486" y="1156" font-size="14" font-weight="700" fill="#111827" text-anchor="start">Cluster role</text>
+<text x="1486" y="1176" font-size="12" font-weight="400" fill="#374151" text-anchor="start">AmazonEKSClusterPolicy</text>
+<text x="1486" y="1194" font-size="12" font-weight="400" fill="#374151" text-anchor="start">+ KMS use</text>
+</g>
+<path d="M320,120 H340 V298 H1255 V392" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#ab)"/>
+<text x="760" y="293" font-size="12" font-weight="600" fill="#2563eb" text-anchor="start" paint-order="stroke" stroke="#ffffff" stroke-width="4">1  HTTPS request</text>
+<path d="M1255,512 V602 H625 V620" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#ab)"/>
+<text x="1140" y="598" font-size="12" font-weight="600" fill="#2563eb" text-anchor="start" paint-order="stroke" stroke="#ffffff" stroke-width="4">2  TCP 80/443</text>
+<path d="M625,790 V800 H965 V810" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#ab)"/>
+<text x="700" y="803" font-size="12" font-weight="600" fill="#2563eb" text-anchor="start" paint-order="stroke" stroke="#ffffff" stroke-width="4">3  routes</text>
+<path d="M320,232 H362 V282 H820 V252" fill="none" stroke="#ea580c" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ao)"/>
+<text x="560" y="277" font-size="12" font-weight="600" fill="#ea580c" text-anchor="start" paint-order="stroke" stroke="#ffffff" stroke-width="4">NS delegation</text>
+<path d="M1465,640 H1472 V264 H900 V252" fill="none" stroke="#ea580c" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ao)"/>
+<text x="1160" y="260" font-size="12" font-weight="600" fill="#ea580c" text-anchor="start" paint-order="stroke" stroke="#ffffff" stroke-width="4">4  writes DNS records</text>
+<path d="M965,620 V580 H440 V322 H320" fill="none" stroke="#ea580c" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ao)"/>
+<text x="326" y="314" font-size="12" font-weight="600" fill="#ea580c" text-anchor="start" paint-order="stroke" stroke="#ffffff" stroke-width="4">5  ACME HTTP-01</text>
+<path d="M465,860 H400 V500 H320" fill="none" stroke="#ea580c" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ao)"/>
+<text x="326" y="520" font-size="12" font-weight="600" fill="#ea580c" text-anchor="start" paint-order="stroke" stroke="#ffffff" stroke-width="4">6  pulls Git</text>
+<path d="M465,940 H392 V1085 H320" fill="none" stroke="#ea580c" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ao)"/>
+<text x="326" y="1078" font-size="12" font-weight="600" fill="#ea580c" text-anchor="start" paint-order="stroke" stroke="#ffffff" stroke-width="4">7  pulls charts</text>
+<path d="M320,470 H384 V130 H1140 V140" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="3 3" marker-end="url(#ap)"/>
+<text x="660" y="125" font-size="12" font-weight="600" fill="#7c3aed" text-anchor="start" paint-order="stroke" stroke="#ffffff" stroke-width="4">8  OIDC: assume role</text>
+<path d="M1391,252 V318" fill="none" stroke="#ea580c" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ao)"/>
+<text x="1398" y="290" font-size="12" font-weight="600" fill="#ea580c" text-anchor="start" paint-order="stroke" stroke="#ffffff" stroke-width="4">9  apply / destroy</text>
+<path d="M1520,890 H1492 V720 H1465" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="3 3" marker-end="url(#ap)"/>
+<text x="1478" y="885" font-size="12" font-weight="600" fill="#7c3aed" text-anchor="end" paint-order="stroke" stroke="#ffffff" stroke-width="4">10  IRSA</text>
+<rect x="20" y="1305" width="1820" height="95" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="36" y="1330" font-size="14" font-weight="800" fill="#1f2933" text-anchor="start">Legend</text>
+<path d="M40,1352 H100" stroke="#2563eb" stroke-width="2.5"/>
+<text x="110" y="1357" font-size="13" font-weight="400" fill="#1f2933" text-anchor="start">user traffic</text>
+<path d="M240,1352 H300" stroke="#ea580c" stroke-width="2.5" stroke-dasharray="6 4"/>
+<text x="310" y="1357" font-size="13" font-weight="400" fill="#1f2933" text-anchor="start">automation / control (DNS, certificates, GitOps, Terraform)</text>
+<path d="M720,1352 H780" stroke="#7c3aed" stroke-width="2.5" stroke-dasharray="3 3"/>
+<text x="790" y="1357" font-size="13" font-weight="400" fill="#1f2933" text-anchor="start">identity (GitHub OIDC, IRSA): short-lived credentials, no stored keys</text>
+<text x="36" y="1385" font-size="12" font-weight="400" fill="#475569" text-anchor="start">1–3 request path · 4 ExternalDNS keeps Route53 in sync · 5 cert-manager proves the domain · 6–7 Argo CD pulls desired state · 8 GitHub assumes IAM roles · 9 the apply role builds the platform stack · 10 ExternalDNS gets Route53 rights</text>
+</svg>
