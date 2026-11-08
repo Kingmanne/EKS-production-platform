@@ -45,9 +45,10 @@ spec:
             existingSecret: grafana-admin
             userKey: admin-user
             passwordKey: admin-password
+          # 256Mi was OOMKilled on first login (Grafana 13 loading the bundled dashboards).
           resources:
-            requests: { cpu: 50m, memory: 128Mi }
-            limits: { memory: 256Mi }
+            requests: { cpu: 50m, memory: 256Mi }
+            limits: { memory: 512Mi }
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
