@@ -96,8 +96,9 @@ jobs:
           if kubectl get crd applications.argoproj.io >/dev/null 2>&1; then
             # root has no finalizer: removing it stops it re-creating the child apps
             kubectl delete application root -n argocd --ignore-not-found --wait=true --timeout=2m
-            # children have the resources finalizer: their Ingress, Deployments etc. go with them
-            kubectl delete applications --all -n argocd --wait=true --timeout=15m
+            # workload apps only: ExternalDNS and Traefik must keep running until DNS and the NLB are cleaned up
+            kubectl delete application backend frontend monitoring cluster-issuers -n argocd \
+              --ignore-not-found --wait=true --timeout=15m
           fi
           kubectl get ingress -A
 
@@ -116,7 +117,9 @@ jobs:
 
       - name: Remove Traefik (its LoadBalancer Service owns the NLB)
         if: steps.cluster.outputs.exists == 'true'
-        run: helm uninstall traefik -n traefik --wait --timeout 5m || echo "Traefik not installed"
+        run: |
+          kubectl delete application traefik -n argocd --ignore-not-found --wait=true --timeout=10m
+          helm uninstall traefik -n traefik --wait --timeout 5m 2>/dev/null || true   # older Helm-installed builds
 
       - name: Verify no load balancers remain for this cluster
         run: |
