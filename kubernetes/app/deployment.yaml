@@ -22,7 +22,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: frontend
-          image: 371510064293.dkr.ecr.eu-west-2.amazonaws.com/frontend:v1
+          image: 371510064293.dkr.ecr.eu-west-2.amazonaws.com/frontend:02347e75315182cc40aabb79b2ce91c2c094b90b
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
