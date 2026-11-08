@@ -6,6 +6,8 @@ repositories:
     url: https://charts.jetstack.io
   - name: external-dns
     url: https://kubernetes-sigs.github.io/external-dns/
+  - name: argo
+    url: https://argoproj.github.io/argo-helm
 
 helmDefaults:
   wait: true          # don't report success until pods are Ready
@@ -33,3 +35,10 @@ releases:
     version: 1.23.0
     values:
       - helm-values/external-dns.yaml
+
+  - name: argocd
+    namespace: argocd
+    chart: argo/argo-cd
+    version: 10.15.0
+    values:
+      - helm-values/argocd.yaml

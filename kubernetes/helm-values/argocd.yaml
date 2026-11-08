@@ -1,0 +1,8 @@
+# Lab-sized Argo CD: local admin login only, UI reached via port-forward.
+dex:
+  enabled: false          # no SSO provider in this lab
+notifications:
+  enabled: false          # no Slack/email integration yet
+configs:
+  cm:
+    timeout.reconciliation: 60s   # check Git every 60s (default 180s)
