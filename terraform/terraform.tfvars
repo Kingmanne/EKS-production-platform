@@ -17,3 +17,5 @@ admin_principal_arns = [
 node_instance_types = ["t4g.medium"]
 node_ami_type       = "AL2023_ARM_64_STANDARD"
 
+
+lab_zone_name = "lab.mustaphaseriki.dev"

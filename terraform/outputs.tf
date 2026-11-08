@@ -29,3 +29,7 @@ output "oidc_provider_arn" {
 output "configure_kubectl" {
   value = "aws eks update-kubeconfig --region ${var.region} --name ${module.eks.cluster_name}"
 }
+
+output "external_dns_role_arn" {
+  value = aws_iam_role.external_dns.arn
+}
