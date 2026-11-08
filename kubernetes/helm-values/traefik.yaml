@@ -1,0 +1,17 @@
+# Internet-facing AWS Network Load Balancer in front of Traefik
+service:
+  spec:
+    type: LoadBalancer
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+
+ingressClass:
+  enabled: true
+  isDefaultClass: true
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    memory: 256Mi
