@@ -25,6 +25,12 @@ A production-style Kubernetes platform on AWS, built from scratch with Terraform
 
 ## Architecture
 
+![How the resources connect](docs/images/architecture.svg)
+
+*Request path (1–3), the controllers that keep DNS and certificates in sync (4–5), Argo CD pulling desired state (6–7), and the short-lived identities used by GitHub and ExternalDNS (8, 10). Full-size: [docs/images/architecture.svg](docs/images/architecture.svg).*
+
+The same flows, simplified:
+
 ```mermaid
 flowchart LR
   user([User]) -->|HTTPS| r53[Route53<br/>app.lab.mustaphaseriki.dev]
