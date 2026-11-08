@@ -8,9 +8,12 @@ RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 FROM python:3.13-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
-# pip is only needed to install packages (done in stage 1). Removing it from the
-# runtime image removes its vendored libraries (msgpack, urllib3) and their CVEs.
-RUN python -m pip uninstall -y pip \
+# Apply Debian security updates (base image can lag behind), then remove pip:
+# it is only needed at build time and its vendored libraries carry CVEs.
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && rm -rf /var/lib/apt/lists/* \
+ && python -m pip uninstall -y pip \
  && rm -rf /usr/local/lib/python3.13/ensurepip \
  && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin appuser
 WORKDIR /app
